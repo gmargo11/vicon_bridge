@@ -35,6 +35,8 @@
 
 #include <Client.h>
 #include <ros/ros.h>
+#include <lcm-cpp.hpp>
+#include "vicon_pose_lcmt.hpp"
 #include <diagnostic_updater/diagnostic_updater.h>
 #include <diagnostic_updater/update_functions.h>
 #include <tf/tf.h>
@@ -183,6 +185,8 @@ private:
   bool marker_data_enabled;
   bool unlabeled_marker_data_enabled;
 
+  lcm::LCM _viconLCM;
+
   bool broadcast_tf_, publish_tf_, publish_markers_;
 
   bool grab_frames_;
@@ -211,7 +215,8 @@ public:
         freq_status_(diagnostic_updater::FrequencyStatusParam(&min_freq_, &max_freq_)), stream_mode_("ClientPull"),
         host_name_(""), tf_ref_frame_id_("world"), tracked_frame_suffix_("vicon"),
         lastFrameNumber(0), frameCount(0), droppedFrameCount(0), frame_datum(0), n_markers(0), n_unlabeled_markers(0),
-        marker_data_enabled(false), unlabeled_marker_data_enabled(false), grab_frames_(false)
+        marker_data_enabled(false), unlabeled_marker_data_enabled(false), grab_frames_(false),
+        _viconLCM(getLcmUrl(255))
 
   {
     // Diagnostics
@@ -464,6 +469,7 @@ private:
     tf::Transform transform;
     std::vector<tf::StampedTransform, std::allocator<tf::StampedTransform> > transforms;
     geometry_msgs::TransformStampedPtr pose_msg(new geometry_msgs::TransformStamped);
+    vicon_pose_lcmt pose_msg_lcm;
     static unsigned int cnt = 0;
 
     for (unsigned int i_subjects = 0; i_subjects < n_subjects; i_subjects++)
@@ -512,6 +518,21 @@ private:
                   {
                     tf::transformStampedTFToMsg(transforms.back(), *pose_msg);
                     seg.pub.publish(pose_msg);
+                  
+                    // convert transform to LCM and publish that as well
+                    for(int i = 0; i < 3; i++){
+                      pose_msg_lcm.translation[i] = pose_msg.transform.translation[i];
+                    }
+                    for(int i = 0; i < 4; i++){
+                      pose_msg_lcm.rotation[i] = pose_msg.transform.rotation[i];
+                    }
+                    pose_msg_lcm.frame_id = pose_msg.header.frame_id;
+                    pose_msg_lcm.stamp = pose_msg.header.stamp;
+                    pose_msg_lcm.seq = pose_msg.header.seq;
+                    pose_msg_lcm.frame_id = pose_msg.header.frame_id;
+                    pose_msg_lcm.child_frame_id = pose_msg.header.child_frame_id;
+                    _viconLCM.publish(subject_name + "/" + segment_name, &pose_msg_lcm);
+
                   }
                 }
               }
