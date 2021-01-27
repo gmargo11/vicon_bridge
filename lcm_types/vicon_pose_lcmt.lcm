@@ -2,8 +2,7 @@ struct vicon_pose_lcmt
 {
 	float translation[3];
 	float rotation[4];
-	string frame_id;
-	string child_frame_id;
+
 	int32_t seq;
 	int32_t stamp_secs;
 	int32_t stamp_nsecs;

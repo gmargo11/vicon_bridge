@@ -216,7 +216,7 @@ public:
         host_name_(""), tf_ref_frame_id_("world"), tracked_frame_suffix_("vicon"),
         lastFrameNumber(0), frameCount(0), droppedFrameCount(0), frame_datum(0), n_markers(0), n_unlabeled_markers(0),
         marker_data_enabled(false), unlabeled_marker_data_enabled(false), grab_frames_(false),
-        _viconLCM(getLcmUrl(255))
+        _viconLCM("udpm://239.255.76.67:7667?ttl=255")
 
   {
     // Diagnostics
@@ -520,18 +520,22 @@ private:
                     seg.pub.publish(pose_msg);
                   
                     // convert transform to LCM and publish that as well
-                    for(int i = 0; i < 3; i++){
-                      pose_msg_lcm.translation[i] = pose_msg.transform.translation[i];
-                    }
-                    for(int i = 0; i < 4; i++){
-                      pose_msg_lcm.rotation[i] = pose_msg.transform.rotation[i];
-                    }
-                    pose_msg_lcm.frame_id = pose_msg.header.frame_id;
-                    pose_msg_lcm.stamp = pose_msg.header.stamp;
-                    pose_msg_lcm.seq = pose_msg.header.seq;
-                    pose_msg_lcm.frame_id = pose_msg.header.frame_id;
-                    pose_msg_lcm.child_frame_id = pose_msg.header.child_frame_id;
-                    _viconLCM.publish(subject_name + "/" + segment_name, &pose_msg_lcm);
+                    pose_msg_lcm.translation[0] = pose_msg->transform.translation.x;
+                    pose_msg_lcm.translation[1] = pose_msg->transform.translation.y;
+                    pose_msg_lcm.translation[2] = pose_msg->transform.translation.z;
+                  
+                    pose_msg_lcm.rotation[0] = pose_msg->transform.rotation.x;
+                    pose_msg_lcm.rotation[1] = pose_msg->transform.rotation.y;
+                    pose_msg_lcm.rotation[2] = pose_msg->transform.rotation.z;
+                    pose_msg_lcm.rotation[3] = pose_msg->transform.rotation.w;
+                    
+                    pose_msg_lcm.stamp_secs = pose_msg->header.stamp.sec;
+                    pose_msg_lcm.stamp_nsecs = pose_msg->header.stamp.nsec;
+                    pose_msg_lcm.seq = pose_msg->header.seq;
+                    //pose_msg_lcm.frame_id = pose_msg->header.frame_id;
+                    //pose_msg_lcm.child_frame_id = pose_msg->child_frame_id;
+                    //_viconLCM.publish(subject_name + "/" + segment_name, &pose_msg_lcm);
+                    _viconLCM.publish("ok", &pose_msg_lcm);
 
                   }
                 }

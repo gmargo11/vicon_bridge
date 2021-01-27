@@ -12,6 +12,10 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(Boost REQUIRED COMPONENTS thread)
 
+find_package(lcm REQUIRED)
+include_directories("/usr/local/include/lcm/")   # lcm includes
+include_directories(lcm_types/cpp)
+
 # Generate messages and services
 add_message_files(FILES
     Marker.msg
@@ -53,10 +57,8 @@ endif (CMAKE_SIZEOF_VOID_P MATCHES "8")
 find_library(VICON_SDK_LIBRARY ViconDataStreamSDK_CPP PATHS ${VICON_SDK_LINK_DIR})
 
 include_directories(src ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${VICON_SDK_INCLUDE_DIR})
-include_directories("/usr/local/include/lcm/")   # lcm includes
-include_directories(lcm_types/cpp)
 
-find_package(lcm REQUIRED)
+
 
 add_library(msvc_bridge src/msvc_bridge.cpp)
 
@@ -65,6 +67,7 @@ target_link_libraries(vicon_bridge
     msvc_bridge
     ${VICON_SDK_LIBRARY}
     ${catkin_LIBRARIES}
+    lcm
 )
 add_dependencies(vicon_bridge ${PROJECT_NAME}_gencpp)
 
