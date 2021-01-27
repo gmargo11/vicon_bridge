@@ -534,8 +534,8 @@ private:
                     pose_msg_lcm.seq = pose_msg->header.seq;
                     //pose_msg_lcm.frame_id = pose_msg->header.frame_id;
                     //pose_msg_lcm.child_frame_id = pose_msg->child_frame_id;
-                    //_viconLCM.publish(subject_name + "/" + segment_name, &pose_msg_lcm);
-                    _viconLCM.publish("ok", &pose_msg_lcm);
+                    _viconLCM.publish(subject_name + "/" + segment_name, &pose_msg_lcm);
+                    
 
                   }
                 }
