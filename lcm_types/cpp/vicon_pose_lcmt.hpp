@@ -9,7 +9,6 @@
 
 #include <lcm/lcm_coretypes.h>
 
-#include <string>
 
 
 class vicon_pose_lcmt
@@ -18,10 +17,6 @@ class vicon_pose_lcmt
         float      translation[3];
 
         float      rotation[4];
-
-        std::string frame_id;
-
-        std::string child_frame_id;
 
         int32_t    seq;
 
@@ -131,16 +126,6 @@ int vicon_pose_lcmt::_encodeNoHash(void *buf, int offset, int maxlen) const
     tlen = __float_encode_array(buf, offset + pos, maxlen - pos, &this->rotation[0], 4);
     if(tlen < 0) return tlen; else pos += tlen;
 
-    char* frame_id_cstr = const_cast<char*>(this->frame_id.c_str());
-    tlen = __string_encode_array(
-        buf, offset + pos, maxlen - pos, &frame_id_cstr, 1);
-    if(tlen < 0) return tlen; else pos += tlen;
-
-    char* child_frame_id_cstr = const_cast<char*>(this->child_frame_id.c_str());
-    tlen = __string_encode_array(
-        buf, offset + pos, maxlen - pos, &child_frame_id_cstr, 1);
-    if(tlen < 0) return tlen; else pos += tlen;
-
     tlen = __int32_t_encode_array(buf, offset + pos, maxlen - pos, &this->seq, 1);
     if(tlen < 0) return tlen; else pos += tlen;
 
@@ -163,24 +148,6 @@ int vicon_pose_lcmt::_decodeNoHash(const void *buf, int offset, int maxlen)
     tlen = __float_decode_array(buf, offset + pos, maxlen - pos, &this->rotation[0], 4);
     if(tlen < 0) return tlen; else pos += tlen;
 
-    int32_t __frame_id_len__;
-    tlen = __int32_t_decode_array(
-        buf, offset + pos, maxlen - pos, &__frame_id_len__, 1);
-    if(tlen < 0) return tlen; else pos += tlen;
-    if(__frame_id_len__ > maxlen - pos) return -1;
-    this->frame_id.assign(
-        static_cast<const char*>(buf) + offset + pos, __frame_id_len__ - 1);
-    pos += __frame_id_len__;
-
-    int32_t __child_frame_id_len__;
-    tlen = __int32_t_decode_array(
-        buf, offset + pos, maxlen - pos, &__child_frame_id_len__, 1);
-    if(tlen < 0) return tlen; else pos += tlen;
-    if(__child_frame_id_len__ > maxlen - pos) return -1;
-    this->child_frame_id.assign(
-        static_cast<const char*>(buf) + offset + pos, __child_frame_id_len__ - 1);
-    pos += __child_frame_id_len__;
-
     tlen = __int32_t_decode_array(buf, offset + pos, maxlen - pos, &this->seq, 1);
     if(tlen < 0) return tlen; else pos += tlen;
 
@@ -198,8 +165,6 @@ int vicon_pose_lcmt::_getEncodedSizeNoHash() const
     int enc_size = 0;
     enc_size += __float_encoded_array_size(NULL, 3);
     enc_size += __float_encoded_array_size(NULL, 4);
-    enc_size += this->frame_id.size() + 4 + 1;
-    enc_size += this->child_frame_id.size() + 4 + 1;
     enc_size += __int32_t_encoded_array_size(NULL, 1);
     enc_size += __int32_t_encoded_array_size(NULL, 1);
     enc_size += __int32_t_encoded_array_size(NULL, 1);
@@ -208,7 +173,7 @@ int vicon_pose_lcmt::_getEncodedSizeNoHash() const
 
 uint64_t vicon_pose_lcmt::_computeHash(const __lcm_hash_ptr *)
 {
-    uint64_t hash = 0xe79a67247f3d6977LL;
+    uint64_t hash = 0x4dce109871e0cad1LL;
     return (hash<<1) + ((hash>>63)&1);
 }
 
