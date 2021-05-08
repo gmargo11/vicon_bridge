@@ -44,6 +44,7 @@
 #include <geometry_msgs/TransformStamped.h>
 #include <vicon_bridge/viconGrabPose.h>
 #include <iostream>
+#include <chrono>
 
 #include <vicon_bridge/Markers.h>
 #include <vicon_bridge/Marker.h>
@@ -530,7 +531,10 @@ private:
                     pose_msg_lcm.rotation[3] = pose_msg->transform.rotation.w;
                     
                     pose_msg_lcm.stamp_secs = pose_msg->header.stamp.sec;
-                    pose_msg_lcm.stamp_nsecs = pose_msg->header.stamp.nsec;
+                    //pose_msg_lcm.stamp_nsecs = pose_msg->header.stamp.nsec;
+                    auto now = std::chrono::high_resolution_clock::now();
+                    auto now_ns = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+                    pose_msg_lcm.stamp_nsecs = (int64_t)now_ns;
                     pose_msg_lcm.seq = pose_msg->header.seq;
                     //pose_msg_lcm.frame_id = pose_msg->header.frame_id;
                     //pose_msg_lcm.child_frame_id = pose_msg->child_frame_id;
