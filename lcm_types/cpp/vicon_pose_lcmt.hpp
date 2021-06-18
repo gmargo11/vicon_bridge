@@ -24,6 +24,8 @@ class vicon_pose_lcmt
 
         int32_t    stamp_nsecs;
 
+        int64_t    timestamp_us;
+
     public:
         /**
          * Encode a message into binary form.
@@ -135,6 +137,9 @@ int vicon_pose_lcmt::_encodeNoHash(void *buf, int offset, int maxlen) const
     tlen = __int32_t_encode_array(buf, offset + pos, maxlen - pos, &this->stamp_nsecs, 1);
     if(tlen < 0) return tlen; else pos += tlen;
 
+    tlen = __int64_t_encode_array(buf, offset + pos, maxlen - pos, &this->timestamp_us, 1);
+    if(tlen < 0) return tlen; else pos += tlen;
+
     return pos;
 }
 
@@ -157,6 +162,9 @@ int vicon_pose_lcmt::_decodeNoHash(const void *buf, int offset, int maxlen)
     tlen = __int32_t_decode_array(buf, offset + pos, maxlen - pos, &this->stamp_nsecs, 1);
     if(tlen < 0) return tlen; else pos += tlen;
 
+    tlen = __int64_t_decode_array(buf, offset + pos, maxlen - pos, &this->timestamp_us, 1);
+    if(tlen < 0) return tlen; else pos += tlen;
+
     return pos;
 }
 
@@ -168,12 +176,13 @@ int vicon_pose_lcmt::_getEncodedSizeNoHash() const
     enc_size += __int32_t_encoded_array_size(NULL, 1);
     enc_size += __int32_t_encoded_array_size(NULL, 1);
     enc_size += __int32_t_encoded_array_size(NULL, 1);
+    enc_size += __int64_t_encoded_array_size(NULL, 1);
     return enc_size;
 }
 
 uint64_t vicon_pose_lcmt::_computeHash(const __lcm_hash_ptr *)
 {
-    uint64_t hash = 0x4dce109871e0cad1LL;
+    uint64_t hash = 0xd90f34abd6168bdfLL;
     return (hash<<1) + ((hash>>63)&1);
 }
 

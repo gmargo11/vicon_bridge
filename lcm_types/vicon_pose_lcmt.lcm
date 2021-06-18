@@ -6,4 +6,6 @@ struct vicon_pose_lcmt
 	int32_t seq;
 	int32_t stamp_secs;
 	int32_t stamp_nsecs;
+
+	int64_t timestamp_us;
 }
